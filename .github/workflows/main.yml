@@ -1,0 +1,29 @@
+name: MAIN Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker-build-api:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build API Docker image with dynamic backend
+        run: |
+          docker build \
+            --build-arg BACKEND_SERVER=${{ secrets.MAPLEMC_SERVER_IP }} \
+            -t ghcr.io/lyttledevelopment/maplemc-voicechat-survival:main .
+
+      - name: Push API Docker image to GitHub Container Registry
+        run: docker push ghcr.io/lyttledevelopment/maplemc-voicechat-survival:main
