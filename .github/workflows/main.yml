@@ -19,11 +19,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build API Docker image with dynamic backend
-        run: |
-          docker build \
-            --build-arg BACKEND_SERVER=${{ secrets.MAPLEMC_SERVER_IP }} \
-            -t ghcr.io/lyttledevelopment/maplemc-voicechat-survival:main .
+      - name: Build API Docker image
+        run: docker build -t ghcr.io/lyttledevelopment/maplemc-voicechat-survival:main .
 
       - name: Push API Docker image to GitHub Container Registry
         run: docker push ghcr.io/lyttledevelopment/maplemc-voicechat-survival:main

@@ -1,14 +1,17 @@
-# Use the official NGINX image from Docker Hub as a base image
+# Use the official NGINX image from Docker Hub
 FROM nginx:latest
 
-# Enable the NGINX stream module (it is already included in the base NGINX image)
+# Install gettext (for envsubst)
+RUN apt-get update && apt-get install -y gettext-base
+
+# Enable the NGINX stream module
 RUN echo "load_module modules/ngx_stream_module.so;" > /etc/nginx/modules.conf
 
-# Copy a custom NGINX configuration to include the stream block
-COPY nginx.conf /etc/nginx/nginx.conf
+# Copy the NGINX configuration template
+COPY nginx.conf /etc/nginx/nginx.conf.template
 
-# Expose the ports for HTTP (80) and TCP/UDP streams (for example 1234)
-EXPOSE 80 1234
+# Expose necessary ports
+EXPOSE 24454
 
-# Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+# At runtime, substitute environment variables into the NGINX config
+CMD /bin/bash -c "envsubst < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
